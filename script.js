@@ -5,6 +5,7 @@ const swiper = new Swiper('.swiper-container', {
     },
   });
   
+  let selectedText = null; 
   function makeDraggable(element) {
     let isDragging = false;
     let offsetX, offsetY;
@@ -25,7 +26,35 @@ const swiper = new Swiper('.swiper-container', {
     document.addEventListener('mouseup', () => {
       isDragging = false;
     });
+  
+    element.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectTextElement(element);
+    });
   }
+  
+  function updateControls() {
+    const textControls = document.querySelector('.text-controls');
+    const addControls = document.querySelector('.add-controls');
+  
+    if (selectedText) {
+      textControls.style.display = 'block';
+      addControls.style.display = 'none';
+    } else {
+      textControls.style.display = 'none';
+      addControls.style.display = 'block';
+    }
+  }
+  
+  function selectTextElement(element) {
+    selectedText = element;
+    updateControls();
+  }
+  
+  document.addEventListener('click', () => {
+    selectedText = null;
+    updateControls();
+  });
   
   document.querySelectorAll('.draggable').forEach(makeDraggable);   // Make all default texts draggable
   document.getElementById('addText').addEventListener('click', () => {
@@ -41,22 +70,44 @@ const swiper = new Swiper('.swiper-container', {
     newText.style.padding = '5px';
     newText.style.cursor = 'move';
     newText.style.border = '1px solid #ccc';
-    
+  
     activeSlide.appendChild(newText);
     makeDraggable(newText);
   });
   
+  // Add emoji
+  document.getElementById('addEmoji').addEventListener('click', () => {
+    const activeSlide = document.querySelector('.swiper-slide-active .image-container');
+    const newEmoji = document.createElement('div');
+    newEmoji.className = 'draggable';
+    newEmoji.contentEditable = 'true';
+    newEmoji.textContent = '😊'; 
+    newEmoji.style.position = 'absolute';
+    newEmoji.style.top = '50px';
+    newEmoji.style.left = '50px';
+    newEmoji.style.fontSize = '24px';
+    newEmoji.style.cursor = 'move';
+  
+    activeSlide.appendChild(newEmoji);
+    makeDraggable(newEmoji);
+  });
+  
+  document.getElementById('updateImage').addEventListener('click', () => {
+    const activeSlide = document.querySelector('.swiper-slide-active img');
+    const newImageUrl = prompt('Enter the URL of the new image:');
+    if (newImageUrl) {
+      activeSlide.src = newImageUrl;
+    }
+  });
+  
   document.getElementById('fontSize').addEventListener('input', (e) => {
-    const activeText = document.querySelector('.swiper-slide-active .draggable:focus');
-    if (activeText) activeText.style.fontSize = `${e.target.value}px`;
+    if (selectedText) selectedText.style.fontSize = `${e.target.value}px`;
   });
   
   document.getElementById('fontFamily').addEventListener('change', (e) => {
-    const activeText = document.querySelector('.swiper-slide-active .draggable:focus');
-    if (activeText) activeText.style.fontFamily = e.target.value;
+    if (selectedText) selectedText.style.fontFamily = e.target.value;
   });
   
   document.getElementById('textColor').addEventListener('input', (e) => {
-    const activeText = document.querySelector('.swiper-slide-active .draggable:focus');
-    if (activeText) activeText.style.color = e.target.value;
-  });
+    if (selectedText) selectedText.style.color = e.target.value;
+  });  

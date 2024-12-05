@@ -41,6 +41,12 @@ body {
     gap: 10px;
   }
   
+  .add-controls, .text-controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
   .text-controls label {
     margin-right: 10px;
   }  
